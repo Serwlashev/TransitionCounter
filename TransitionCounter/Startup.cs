@@ -41,6 +41,38 @@ namespace TransitionCounter
 
             app.UseSession();
             app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("<div><a href=\"home\">Home </a><a href=\"about\">About </a><a href=\"contacts\">Contacts</a></div>");
+                });
+            });
+
+            app.Map("/home", (home) =>
+            {
+                home.Run(async (ctx) =>
+                {
+                    await ctx.Response.WriteAsync("<h1>home</h1></br><div><a href=\"about\">About </a><a href=\"contacts\">Contacts</a></div>");
+                });
+            });
+
+            app.Map("/about", (home) =>
+            {
+                home.Run(async (ctx) =>
+                {
+                    await ctx.Response.WriteAsync("<h1>about</h1></br><div><a href=\"home\">Home </a><a href=\"contacts\">Contacts</a></div>");
+                });
+            });
+
+            app.Map("/contacts", (home) =>
+            {
+                home.Run(async (ctx) =>
+                {
+                    await ctx.Response.WriteAsync("<h1>contacts</h1></br><div><a href=\"home\">Home </a><a href=\"about\">About</a></div>");
+                });
+            });
         }
     }
 }
