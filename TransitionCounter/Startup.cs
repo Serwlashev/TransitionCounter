@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TransitionCounter.Services;
 using TransitionCounter.Services.Interfaces;
 
@@ -26,8 +22,13 @@ namespace TransitionCounter
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDistributedMemoryCache();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession();
 
+            //services.AddSession(options =>
+            //{
+            //    options.Cookie.Expiration = 
+            //});
             services.AddSingleton<ISessionService, SessionService>();
         }
 
@@ -39,8 +40,8 @@ namespace TransitionCounter
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSession();
             app.UseRouting();
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
@@ -54,7 +55,8 @@ namespace TransitionCounter
             {
                 home.Run(async (ctx) =>
                 {
-                    await ctx.Response.WriteAsync("<h1>home</h1></br><div><a href=\"about\">About </a><a href=\"contacts\">Contacts</a></div>");
+                    app.ApplicationServices.GetService<ISessionService>().CountTransition("home");
+                    await ctx.Response.WriteAsync($"<h1>home</h1><div>{app.ApplicationServices.GetService<ISessionService>().GetTransitionNumber("home")}</div></br><div><a href=\"about\">About </a><a href=\"contacts\">Contacts</a></div>");
                 });
             });
 
@@ -62,7 +64,8 @@ namespace TransitionCounter
             {
                 home.Run(async (ctx) =>
                 {
-                    await ctx.Response.WriteAsync("<h1>about</h1></br><div><a href=\"home\">Home </a><a href=\"contacts\">Contacts</a></div>");
+                    app.ApplicationServices.GetService<ISessionService>().CountTransition("about");
+                    await ctx.Response.WriteAsync($"<h1>about</h1><div>{app.ApplicationServices.GetService<ISessionService>().GetTransitionNumber("about")}</div></br><div><a href=\"home\">Home </a><a href=\"contacts\">Contacts</a></div>");
                 });
             });
 
@@ -70,7 +73,8 @@ namespace TransitionCounter
             {
                 home.Run(async (ctx) =>
                 {
-                    await ctx.Response.WriteAsync("<h1>contacts</h1></br><div><a href=\"home\">Home </a><a href=\"about\">About</a></div>");
+                    app.ApplicationServices.GetService<ISessionService>().CountTransition("contacts");
+                    await ctx.Response.WriteAsync($"<h1>contacts</h1><div>{app.ApplicationServices.GetService<ISessionService>().GetTransitionNumber("contacts")}</div></br><div><a href=\"home\">Home </a><a href=\"about\">About</a></div>");
                 });
             });
         }

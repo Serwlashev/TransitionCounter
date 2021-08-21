@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TransitionCounter.Services.Interfaces
+﻿namespace TransitionCounter.Services.Interfaces
 {
     interface ISessionService
     {
+        void CountTransition(string key);
+        int GetTransitionNumber(string key);
     }
 }
